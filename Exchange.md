@@ -56,6 +56,8 @@ Params: none
 Return: Object
 1. address {string}
 2. privateKey {string}
+
+Core version: +v1.1.1-beta.3
 ~~~
 ```
 $ curl http://x:my-authentication-key@127.0.0.1:7880/ \
@@ -87,6 +89,8 @@ Params:
 Return: Object
 1. address {string}
 2. privateKey {string}
+
+Core version: +v1.1.1-beta.3
 ~~~
 ```
 $ curl http://x:my-authentication-key@127.0.0.1:7880/ \
@@ -118,6 +122,8 @@ Execute command when the best block changes
 ### Configuration
 1. Go to `Dashboard` > `Configuration` > `Block Notification`
 2. Enter executable command to `Command` field
+
+Desktop version: +v1.1.1-beta.9
 ```
 Examples:
 ...
@@ -134,6 +140,8 @@ Block is usually mined in 3 to 10 minutes, it should not be a problem to handle 
 1. Go to `Dashboard` > `Configuration` > `Subscription`
 2. Enter executable command to `Command` field
 3. Make sure wmcc-desktop client to have permission to execute this command
+
+Desktop version: +v1.1.1-beta.9
 ```
 Examples:
 ...
@@ -149,6 +157,8 @@ Method: subscribe | unsubscribe
 Params:  
 1. addresses {array} 
 2. confirmations {number} - default 0
+
+Core version: +v1.1.1-beta.3
 ~~~
 ```curl
 $ curl http://x:[api-key]@127.0.0.1:7880/ \
@@ -181,6 +191,8 @@ To get list of subscribers:
 Method: subscribers
 Params: none
 Return: addresses {array}
+
+Core version: +v1.1.1-beta.3
 ~~~
 ## Balance
 ### Query Address Balance
@@ -191,6 +203,8 @@ Params:
 1. address {string} - single address
 Return:
 1. amount {string} - balance amount in WMCC
+
+Core version: +v1.1.1-beta.3
 ~~~
 ```curl
 $ curl http://localhost:7880/ \
@@ -228,6 +242,8 @@ Params:
    5.3 max {float} - maximum amount of txFee, optional argument if using rate to calculate fee. Will return error if txFee exceed this amount
 Return:
 1. rawTransaction {string} - signed transaction
+
+Core version: +v1.1.1-beta.3
 ~~~
 ```
 $ curl http://localhost:7880/ \
@@ -243,14 +259,14 @@ const rpc = new Core.http.RPCClient({
 
 (async () => {
   const rawTx = await rpc.execute('createsigntransaction',
-    "wc1qpg4puh3v5d2hvrusca2qgjy67uv68axu73fs5y",
-    "3410115232eecc45e7e1809cc90f136a63f709e88ef718f27b50af282fde6d1d",
-    "wc1qfrhm7hyr74ykcq76ltd7wyf9frdz4g9tw6jq74",
-    "0.5",
-    {
-      "rate": "0.001",
-      "max": "0.01"
-    });
+	  "wc1qpg4puh3v5d2hvrusca2qgjy67uv68axu73fs5y",
+	  "3410115232eecc45e7e1809cc90f136a63f709e88ef718f27b50af282fde6d1d",
+	  "wc1qfrhm7hyr74ykcq76ltd7wyf9frdz4g9tw6jq74",
+	  "0.5",
+	  {
+		  "rate": "0.001",
+		  "max": "0.01"
+	  });
   console.log(rawTx);
 })().catch((err) => {
   console.error(err.stack);
@@ -263,7 +279,9 @@ Method: sendrawtransaction
 Params:  
 1. rawTransaction {string} - hex string of signed transaction
 Return:
-1. txHash {string} - transaction hash
+2. txHash {string} - transaction hash
+
+Core version: +v1.0.0-beta.1
 ~~~
 ```curl
 $ curl http://localhost:7880/ \
