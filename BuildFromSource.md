@@ -26,10 +26,12 @@ $ npm install
 
 ## Build client
 ```
-Linux example:
+Linux:
 $ npm run build-linux
-Windows example:
+Windows:
 $ npm run build-win64
+OSX:
+$ npm run build-osx
 ```
 
 Released files and executable can be found on release folder
