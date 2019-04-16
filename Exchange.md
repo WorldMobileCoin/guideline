@@ -1,7 +1,10 @@
+
 # Exchange Guideline
+API Documentation available at [Official Website](https://api.worldmobilecoin.com/)
+
 ## Installation
 
- 1. Download wmcc-desktop [latest client](https://github.com/WorldMobileCoin/wmcc-desktop/releases) or build from [source](https://github.com/WorldMobileCoin/guideline/blob/master/BuildFromSource.README)
+ 1. Download wmcc-desktop [latest client](https://github.com/WorldMobileCoin/wmcc-desktop/releases) or build from [source](https://github.com/WorldMobileCoin/guideline/blob/master/BuildFromSource.md)
 
 ## Setup Wallet
 1. Run wmcc-desktop client and create new account
@@ -39,10 +42,9 @@ const rpc = new RPCClient({
   uri: 'http://localhost:7880/'
 });
 ```
-Source: [Github](https://github.com/WorldMobileCoin/wmcc-core)
-CDN:  uncompress [[wmcc-core.js]](https://cdn.jsdelivr.net/npm/wmcc-core/lib/wmcc-core.js) , compressed [[wmcc-core.min.js]](https://cdn.jsdelivr.net/npm/wmcc-core/lib/wmcc-core.min.js)
+Source: [Github](https://github.com/WorldMobileCoin/wmcc-core), HTTP/RPC commands file [rpc.js](https://github.com/WorldMobileCoin/wmcc-core/blob/master/src/http/rpc.js)
 
-API Documentation available at [Official Website](https://api.worldmobilecoin.com/)
+CDN:  uncompress [[wmcc-core.js]](https://cdn.jsdelivr.net/npm/wmcc-core/lib/wmcc-core.js) , compressed [[wmcc-core.min.js]](https://cdn.jsdelivr.net/npm/wmcc-core/lib/wmcc-core.min.js)
 
 ## Generate WMCC Address
 
@@ -77,13 +79,14 @@ const rpc = new Core.http.RPCClient({
 });
 ```
 ### From private key
+Get an `address` from existing `privateKey`:
 ~~~
 Method: addressfromprivkey
 Params: 
-1. privateKey {string|buffer} - 256-bit private key
+1. privateKey {string} - 256-bit private key
 Return: Object
 1. address {string}
-2. privateKey {string|buffer}
+2. privateKey {string}
 ~~~
 ```
 $ curl http://x:my-authentication-key@127.0.0.1:7880/ \
@@ -114,22 +117,22 @@ const privKey = 'E9873D79C6D87DC0FB6A5778633389F4453213303DA61F20BD67FC233AA3326
 Execute command when the best block changes
 ### Configuration
 1. Go to `Dashboard` > `Configuration` > `Block Notification`
-2. Enter executable path to `Path` field
+2. Enter executable command to `Command` field
 ```
 Examples:
 ...
-curl https://someurl.com/blockupdate?hash="%s"
+curl https://[someurl.com]/blockupdate?hash="%s"
 ...
-/path_to_exec/blockupdate.sh --blockhash=%s
+[path_to_exec]/blocknotify.sh --blockhash=%s
 ...
 ```
 
 ## Subscription
 WMCC Desktop offered address subscription to monitor their balance. Client will execute command when subscriber address were found in block. 
-Block is usually mined in 5 - 30 minutes, it should not be a problem to handle large amount of subscribers
+Block is usually mined in 3 to 10 minutes, it should not be a problem to handle large amount of subscribers
 ### Configuration
 1. Go to `Dashboard` > `Configuration` > `Subscription`
-2. Enter executable path to `Path` field
+2. Enter executable command to `Command` field
 3. Make sure wmcc-desktop client to have permission to execute this command
 ```
 Examples:
@@ -140,14 +143,12 @@ curl https://someurl.com/subscribe?address="%s"&txhash="%s"
 ...
 ```
 ### Subscribe & Unsubscribe
-`addresses` parameter can be a single address or array of addresses, `confirmation` and `includevin` for subscribe method only
-
+`addresses` parameter can be a single address or array of addresses,  number of `confirmation` argument for subscribe method only, will fire command after `n` of confirmations for listed addresses
 ~~~
 Method: subscribe | unsubscribe
 Params:  
-1. addresses {array|string} 
+1. addresses {array} 
 2. confirmations {number} - default 0
-3. includevin {boolean} - default false
 ~~~
 ```curl
 $ curl http://x:[api-key]@127.0.0.1:7880/ \
@@ -155,17 +156,17 @@ $ curl http://x:[api-key]@127.0.0.1:7880/ \
   -X POST \
   --data '{
   "method": "subscribe",
-  "params": [['wc1qbb3a7...', 'wc1qabyx7...', ...]]
+  "params": [['wc1qbb3a7...', 'wc1qabyx2...', ...]]
 ```
 ```js
 const Core = require('wmcc-core');
-const addresses = ['wc1qbb3a7...', 'wc1qabyx7...', ...];
+const addresses = ['wc1qbb3a7...', 'wc1qabyx2...', ...];
 const rpc = new Core.http.RPCClient({
   network: 'mainnet'
 });
 
 (async () => {
-  const subscribe = await rpc.execute('subscribe', addresses, 0, false);
+  const subscribe = await rpc.execute('subscribe', addresses, 3);
   console.log(subscribe); // return true if success
   
   const unsubscribe = await rpc.execute('unsubscribe', addresses);
@@ -175,13 +176,111 @@ const rpc = new Core.http.RPCClient({
 });
 ```
 ### Subscribers
-To get list of subscribers
+To get list of subscribers:
 ~~~
 Method: subscribers
 Params: none
 Return: addresses {array}
 ~~~
+## Balance
+### Query Address Balance
+To get final balance of an address:
+~~~
+Method: querybalance
+Params:  
+1. address {string} - single address
+Return:
+1. amount {string} - balance amount in WMCC
+~~~
+```curl
+$ curl http://localhost:7880/ \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  --data '{"method": "querybalance", "params": ["wc1qttpkkjh..."]}'
+```
+```js
+const Core = require('wmcc-core');
+const rpc = new Core.http.RPCClient({
+  network: 'mainnet'
+});
+
+(async () => {
+  const amount= await rpc.execute('querybalance', "wc1qttpkkjh...");
+  console.log(amount);
+})().catch((err) => {
+  console.error(err.stack);
+});
+```
 ## Transaction
 These methods are involved for single address. By querying address final balance, it should be handy for exchange to calculate changes, fees and amount to withdraw.
-### Query Address Balance
-### Create, Sign and Send a Transaction
+
+### Create and Sign a Transaction
+~~~
+Method: createsigntransaction
+Params:  
+1. from {string} - sender address
+2. privateKey {string} - from/sender privatekey
+3. to {string} - receiver address
+4. amount {float} - amount to transfer
+5. fees {object} - can `rate` or `amount` for fee calculation
+   5.1 rate {float} - using rate for fee calculation OR
+   5.2 amount {float} - using `fixed` amount a.k.a hardFee
+   5.3 max {float} - maximum amount of txFee, optional argument if using rate to calculate fee. Will return error if txFee exceed this amount
+Return:
+1. rawTransaction {string} - signed transaction
+~~~
+```
+$ curl http://localhost:7880/ \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  --data '{"method": "createsigntransaction",  "params": ["wc1qpg4puh3v5d2hvrusca2qgjy67uv68axu73fs5y", "3410115232eecc45e7e1809cc90f136a63f709e88ef718f27b50af282fde6d1d", "wc1qfrhm7hyr74ykcq76ltd7wyf9frdz4g9tw6jq74", 0.5, {"rate": 0.001, "max":0.01]}'
+```
+```js
+const Core = require('wmcc-core');
+const rpc = new Core.http.RPCClient({
+  network: 'mainnet'
+});
+
+(async () => {
+  const rawTx = await rpc.execute('createsigntransaction',
+    "wc1qpg4puh3v5d2hvrusca2qgjy67uv68axu73fs5y",
+    "3410115232eecc45e7e1809cc90f136a63f709e88ef718f27b50af282fde6d1d",
+    "wc1qfrhm7hyr74ykcq76ltd7wyf9frdz4g9tw6jq74",
+    "0.5",
+    {
+      "rate": "0.001",
+      "max": "0.01"
+    });
+  console.log(rawTx);
+})().catch((err) => {
+  console.error(err.stack);
+});
+```
+### Broadcast Signed Transaction
+Broadcast a signed transaction:
+~~~
+Method: sendrawtransaction
+Params:  
+1. rawTransaction {string} - hex string of signed transaction
+Return:
+1. txHash {string} - transaction hash
+~~~
+```curl
+$ curl http://localhost:7880/ \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  --data '{"method": "sendrawtransaction", "params": ["01000000000101c16d71b239a173c17341b95dc5f70f27347c88a026e8a3a58f93fa23aff3917b01..."]}'
+```
+```js
+const Core = require('wmcc-core');
+const rpc = new Core.http.RPCClient({
+  network: 'mainnet'
+});
+
+(async () => {
+  const txHash = await rpc.execute('sendrawtransaction', "01000000000101c16d71b239a173c17341b95dc5f70f27347c88a026e8a3a58f93fa23aff3917b01...");
+  console.log(txHash);
+})().catch((err) => {
+  console.error(err.stack);
+});
+```
