@@ -1,6 +1,6 @@
-# wmcc-daemon (WorldMobileCoin)
+# wmcc-builder (WorldMobileCoin)
 
-__NOTE__: The first release of wmcc-daemon.
+__NOTE__: Build wmcc-desktop from source
 
 ---
 
