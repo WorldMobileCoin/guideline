@@ -226,7 +226,7 @@ const rpc = new Core.http.RPCClient({
 });
 ```
 ## Transaction
-`createsigntransaction` method is involved for single address. By querying address final balance, it should be handy for exchange to calculate changes, fees and amount to withdraw. Change will be add automatically to sender/from address.
+`createsigntransaction` method is involved for single address. By querying address final balance, it should be handy for exchange to calculate changes, fees and amount to withdraw. Change will be automatically added to sender/from address.
 
 ### Create and Sign a Transaction
 ~~~
