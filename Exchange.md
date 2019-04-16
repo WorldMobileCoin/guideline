@@ -110,7 +110,7 @@ const privKey = 'E9873D79C6D87DC0FB6A5778633389F4453213303DA61F20BD67FC233AA3326
 
 (async () => {
   const {address, privateKey}= await rpc.execute('addressfromprivkey', privKey);
-  if (Buffer.compare(privateKey, Buffer.from(privKey, 'hex'))!== 0)
+  if (Buffer.compare(Buffer.from(privateKey, 'hex'), Buffer.from(privKey, 'hex'))!== 0)
     throw new Error('Private key not match')
   console.log(address)
 })().catch((err) => {
@@ -226,7 +226,7 @@ const rpc = new Core.http.RPCClient({
 });
 ```
 ## Transaction
-These methods are involved for single address. By querying address final balance, it should be handy for exchange to calculate changes, fees and amount to withdraw.
+`createsigntransaction` method is involved for single address. By querying address final balance, it should be handy for exchange to calculate changes, fees and amount to withdraw. Change will be add automatically to sender/from address.
 
 ### Create and Sign a Transaction
 ~~~
