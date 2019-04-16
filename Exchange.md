@@ -121,7 +121,7 @@ const privKey = 'E9873D79C6D87DC0FB6A5778633389F4453213303DA61F20BD67FC233AA3326
 Execute command when the best block changes
 ### Configuration
 1. Go to `Dashboard` > `Configuration` > `Block Notification`
-2. Enter executable command to `Command` field
+2. Enter executable command to `block-notify` field
 
 Desktop version: +v1.1.1-beta.9
 ```
@@ -138,7 +138,7 @@ WMCC Desktop offered address subscription to monitor their balance. Client will 
 Block is usually mined in 3 to 10 minutes, it should not be a problem to handle large amount of subscribers
 ### Configuration
 1. Go to `Dashboard` > `Configuration` > `Subscription`
-2. Enter executable command to `Command` field
+2. Enter executable command to `subscribe-cmd` field
 3. Make sure wmcc-desktop client to have permission to execute this command
 
 Desktop version: +v1.1.1-beta.9
