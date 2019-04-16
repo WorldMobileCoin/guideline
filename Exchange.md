@@ -17,6 +17,8 @@ You can use direct HTTP calls for invoking [REST/RPC API](http://api.worldmobile
 ```curl
 $ curl http://x:[api-key]@[http-host]:[http-port]/
 
+Note: For windows, you can use git [download](https://git-scm.com/downloads) to use curl command.
+
 Example:
 $ curl http://x:my-authentication-key@127.0.0.1:7880/ \
   -H 'Content-Type: application/json' \
